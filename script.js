@@ -1,9 +1,3 @@
-// =====================================================
-// E-JUST GPA Simulator: everything in one file
-// Rules come from the CSIT Student Academic Handbook 2025/2026
-// =====================================================
-
-// ---------- rules ----------
 const GRADE_POINTS = {
     'A+': 4.0,
     'A': 3.7,
@@ -17,8 +11,6 @@ const GRADE_POINTS = {
     'WF': 1.0, // withdrawn failing counts like an F
 };
 const FAILING_GRADES = ['F', 'WF'];
-
-// Tables 7 and 8: best grade first
 const CSIT_CUTOFFS = [
     { grade: 'A+', minPercent: 95 },
     { grade: 'A', minPercent: 90 },
@@ -30,7 +22,6 @@ const CSIT_CUTOFFS = [
     { grade: 'D', minPercent: 60 },
     { grade: 'F', minPercent: 0 },
 ];
-// FIBH and University Requirements / Liberal Arts: only D changes (50 instead of 60)
 const LIBERAL_ARTS_CUTOFFS = CSIT_CUTOFFS.map((cutoff) =>
     cutoff.grade === 'D' ? { ...cutoff, minPercent: 50 } : cutoff
 );
@@ -43,24 +34,21 @@ const PROBATION_MAX_CREDITS = 12;
 const STORAGE_KEY = 'ejust-gpa-student-info';
 const EPSILON = 1e-9; // protects comparisons from floating point noise
 
-// ---------- helpers ----------
+
 function getCutoffs(courseType) {
     return courseType === 'ur' ? LIBERAL_ARTS_CUTOFFS : CSIT_CUTOFFS;
 }
 
-// marks needed for a percentage, multiplying first so 95% of 300 is exactly 285
 function marksForPercent(percent, totalMarks) {
     return (percent * totalMarks) / 100;
 }
 
-// index of the grade these marks earn (cutoffs are ordered best to worst)
 function findGradeIndex(earnedMarks, totalMarks, cutoffs) {
     return cutoffs.findIndex(
         (cutoff) => earnedMarks >= marksForPercent(cutoff.minPercent, totalMarks) - EPSILON
     );
 }
 
-// a mark you still need is rounded up to a tenth, never more than that
 function roundUpToTenth(value) {
     return Math.ceil(value * 10 - EPSILON) / 10;
 }
@@ -74,10 +62,6 @@ function showMessages(box, messages) {
         })
     );
 }
-
-// =====================================================
-// 1. STUDENT INFO
-// =====================================================
 const gpaForm = document.getElementById('gpa-form');
 const facultySelect = document.getElementById('faculty');
 const semesterSelect = document.getElementById('sem');
@@ -96,7 +80,6 @@ function saveStudentInfo() {
             })
         );
     } catch (error) {
-        // storage can be blocked, the simulator still works without it
     }
 }
 
@@ -108,12 +91,10 @@ function loadStudentInfo() {
         if (saved.semester) semesterSelect.value = saved.semester;
         if (saved.currentCgpa) currentCgpaInput.value = saved.currentCgpa;
         if (saved.completedHours) completedHoursInput.value = saved.completedHours;
-    } catch (error) {
-        // ignore broken saved data
+    } catch (error) 
     }
 }
 
-// 32 / 64 / 96 completed credit hours move you up a level
 function getYearLevel(completedHours) {
     if (completedHours >= 96) return 4;
     if (completedHours >= 64) return 3;
@@ -125,9 +106,6 @@ function getYearLevel(completedHours) {
     field.addEventListener('change', saveStudentInfo);
 });
 
-// =====================================================
-// 2. GPA & CGPA SIMULATOR
-// =====================================================
 const courseList = document.getElementById('gpa-course-list');
 const semesterGpaOutput = document.getElementById('semester-gpa');
 const projectedCgpaOutput = document.getElementById('projected-cgpa');
@@ -177,14 +155,12 @@ function calculateSemester(courses) {
     return { qualityPoints, semesterHours, passedHours, semesterGpa: qualityPoints / semesterHours };
 }
 
-// exact for new courses; a retake would also need the old attempt removed
 function calculateProjectedCgpa(currentCgpa, completedHours, semester) {
     const totalPoints = currentCgpa * completedHours + semester.qualityPoints;
     const totalHours = completedHours + semester.semesterHours;
     return totalPoints / totalHours;
 }
 
-// messages use the 2-decimal values the student sees, so text and numbers always agree
 function buildGpaMessages(info, semester, projectedCgpa) {
     const messages = [];
     const level = getYearLevel(info.completedHours);
@@ -261,9 +237,6 @@ gpaForm.addEventListener('reset', () => {
     }, 0);
 });
 
-// =====================================================
-// 3. GRADE SIMULATOR
-// =====================================================
 const gradeForm = document.getElementById('grade-form');
 const gradeCreditsSelect = document.getElementById('grade-credit-hours');
 const gradeCourseTypeSelect = document.getElementById('grade-course-type');
@@ -305,10 +278,6 @@ function calculateGrade() {
 }
 
 document.getElementById('calculate-grade').addEventListener('click', calculateGrade);
-
-// =====================================================
-// 4. FINAL & CLASSWORK TARGET
-// =====================================================
 const targetForm = document.getElementById('target-form');
 const targetCourseTypeSelect = document.getElementById('target-course-type');
 const targetMidtermInput = document.getElementById('target-midterm-mark');
@@ -345,8 +314,7 @@ function calculateTarget() {
 
     const cutoffs = getCutoffs(targetCourseTypeSelect.value);
     const totalMarks = midtermTotal + classworkTotal + finalTotal;
-
-    // F is "anything below D", so there is nothing to aim for
+    
     if (targetGrade === 'F') {
         const passCutoff = cutoffs.find((cutoff) => cutoff.grade === 'D');
         const passMarks = roundUpToTenth(marksForPercent(passCutoff.minPercent, totalMarks));
@@ -364,7 +332,6 @@ function calculateTarget() {
         `${targetGrade} needs ${roundUpToTenth(marksNeededInTotal)} out of ${totalMarks} (${targetCutoff.minPercent}%) in total.`,
     ];
 
-    // the midterm alone already gets there
     if (marksNeededAfterMidterm <= EPSILON) {
         classworkResultOutput.value = 'No minimum';
         finalResultOutput.value = 'No minimum';
@@ -373,14 +340,12 @@ function calculateTarget() {
         return;
     }
 
-    // not reachable even if everything left is full marks
     if (marksNeededAfterMidterm > classworkTotal + finalTotal + EPSILON) {
         messages.push(`Even with full marks in classwork and the final, a ${targetGrade} is out of reach.`);
         showMessages(targetMessagesBox, messages);
         return;
     }
 
-    // lowest classwork that still works if the final is a perfect score
     const classworkFloor = marksNeededAfterMidterm - finalTotal;
     if (classworkFloor <= EPSILON) {
         classworkResultOutput.value = 'No minimum';
