@@ -93,7 +93,7 @@ function saveStudentInfo() {
                 semester: semesterSelect.value,
                 currentCgpa: currentCgpaInput.value,
                 completedHours: completedHoursInput.value,
-            })
+            }
         );
     } catch (error) {
         // storage can be blocked, the simulator still works without it
