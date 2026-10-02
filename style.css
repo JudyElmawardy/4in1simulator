@@ -1,0 +1,160 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background-color: #fff6ee;
+    color: #262628;
+    text-align: center;
+    font-family: 'Oswald', sans-serif;
+}
+
+header {
+    padding: 30px 20px 10px;
+}
+
+header h1,
+header p {
+    margin: 0;
+}
+
+footer {
+    padding: 20px;
+}
+
+h2,
+h3 {
+    margin: 0 0 15px;
+}
+
+main {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+        "info info"
+        "gpa  grade"
+        "gpa  finals";
+    gap: 20px;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.student-info { grid-area: info; }
+.gpa-sim      { grid-area: gpa; }
+.grade-sim    { grid-area: grade; }
+.finals-sim   { grid-area: finals; }
+
+.student-info,
+.gpa-sim,
+.grade-sim,
+.finals-sim {
+    background-color: #d6dc82;
+    border-radius: 10px;
+    padding: 20px;
+}
+
+.student-info {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    align-items: end;
+}
+
+.gpa-sim {
+    display: flex;
+    flex-direction: column;
+}
+
+.gpa-sim form {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.student-info .field {
+    margin-bottom: 0;
+}
+
+input,
+select {
+    width: 100%;
+    padding: 6px;
+    font-family: inherit;
+}
+
+fieldset {
+    border:transparent;
+}
+
+legend {
+    padding: 0 8px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    padding: 6px;
+}
+
+
+button {
+    background-color: #d86072;
+    color: #fff6ee;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.field + button,
+.result,
+.results {
+    margin-top: 10px;
+}
+
+
+.results p,
+.target-results p,
+.result {
+    margin: 8px 0;
+}
+
+.target-results {
+    margin-top: 20px;
+}
+
+@media (max-width: 800px) {
+    main {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+            "info"
+            "gpa"
+            "grade"
+            "finals";
+    }
+
+    .student-info {
+        grid-template-columns: 1fr 1fr;
+    }
+}
