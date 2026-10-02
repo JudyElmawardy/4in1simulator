@@ -88,14 +88,14 @@ function saveStudentInfo() {
     try {
         localStorage.setItem(
             STORAGE_KEY,
-            JSON.stringify(
-                {
+            JSON.stringify({
                 faculty: facultySelect.value,
                 semester: semesterSelect.value,
                 currentCgpa: currentCgpaInput.value,
                 completedHours: completedHoursInput.value,
-                })
-     catch (error) {
+            })
+        );
+    } catch (error) {
         // storage can be blocked, the simulator still works without it
     }
 }
@@ -298,7 +298,7 @@ function calculateGrade() {
         const marksToNextGrade = roundUpToTenth(
             marksForPercent(nextGrade.minPercent, totalMarks) - earnedMarks
         );
-        resultText += `. ${marksToNextGrade} more marks for ${nextGrade.grade}.`;
+        resultText += `. ${marksToNextGrade} more ${marksToNextGrade === 1 ? 'mark' : 'marks'} for ${nextGrade.grade}.`;
     }
 
     expectedGradeOutput.value = resultText;
