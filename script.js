@@ -94,7 +94,7 @@ function saveStudentInfo() {
                 currentCgpa: currentCgpaInput.value,
                 completedHours: completedHoursInput.value,
             })
-    } catch (error) {
+     catch (error) {
         // storage can be blocked, the simulator still works without it
     }
 }
